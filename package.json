@@ -1,0 +1,26 @@
+{
+  "name": "decap-cms-google-apps-script",
+  "version": "1.0.0",
+  "description": "decap cms oauth github client implementation in google apps script",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"push": "npx clasp push",
+	"pull": "npx clasp pull"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nuzulul/decap-cms-google-apps-script.git"
+  },
+  "keywords": [
+    "decap-cms",
+    "google-apps-script",
+    "github-oauth"
+  ],
+  "author": "Nuzulul Zulkarnain",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nuzulul/decap-cms-google-apps-script/issues"
+  },
+  "homepage": "https://github.com/nuzulul/decap-cms-google-apps-script#readme"
+}
