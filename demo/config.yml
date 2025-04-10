@@ -2,9 +2,9 @@ backend:
   name: github
   repo: username/repo
   branch: main
-  site_domain: https://example.com
-  base_url: https://script.google.com
-  auth_endpoint: /macros/s/[SCRIPT ID]/exec
+  site_domain: cms.netlify.com
+  base_url: http://127.0.0.1:8080
+  auth_endpoint: /client.html
 media_folder: static/upload
 public_folder: /upload
 collections:

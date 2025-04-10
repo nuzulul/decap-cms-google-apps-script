@@ -1,0 +1,123 @@
+const jsonString = HtmlService.createHtmlOutputFromFile("config.html").getContent()
+const jsonObject = JSON.parse(jsonString)
+if(jsonObject.github_client_id && jsonObject.github_client_secret){
+    PropertiesService.getScriptProperties().setProperty('github_client_id', jsonObject.github_client_id)
+    PropertiesService.getScriptProperties().setProperty('github_client_secret', jsonObject.github_client_secret)
+    PropertiesService.getScriptProperties().setProperty('pkce_client_endpoint', jsonObject.pkce_client_endpoint)
+}
+let github_client_id = PropertiesService.getScriptProperties().getProperty('github_client_id')
+let github_client_secret = PropertiesService.getScriptProperties().getProperty('github_client_secret')
+let pkce_client_endpoint = PropertiesService.getScriptProperties().getProperty('pkce_client_endpoint')
+
+const cache = CacheService.getScriptCache()
+
+let auth_config = {
+    client_id: github_client_id,
+    client_secret : github_client_secret,
+    redirect_uri: ScriptApp.getService().getUrl(),
+    authorization_endpoint: "https://github.com/login/oauth/authorize",
+    token_endpoint: "https://github.com/login/oauth/access_token"
+}
+
+function renderTemplate(content){
+        let html = `<!DOCTYPE html>
+                    <html>
+                      <head>
+                        <base target="_top">
+                      </head>
+                      <body>
+                      <div>
+                        ${content}
+                      </div>
+                    </body>
+                    </html>`  
+        return html  
+}
+
+
+function doGet(e) {
+
+  if(e.parameter.response_type == "code" 
+      && e.parameter.code_challenge_method == "S256" 
+      && e.parameter.client_id == github_client_id
+      && e.parameter.redirect_uri == pkce_client_endpoint
+  ){
+
+      const cache = CacheService.getScriptCache()
+      cache.put('state', e.parameter.state)
+      cache.put('code_challenge', e.parameter.code_challenge)
+
+      var url = auth_config.authorization_endpoint 
+          + "?"
+          + "&client_id="+encodeURIComponent(auth_config.client_id)
+          + "&state="+encodeURIComponent(e.parameter.state)
+          + "&scope="+encodeURIComponent(e.parameter.scope)
+          + "&redirect_uri="+encodeURIComponent(auth_config.redirect_uri)
+   
+      let html = `<a id="redirect" href="${url}">Open Github Authorization</a>`
+      html = renderTemplate(html)
+      return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
+
+  }else if(e.parameter.code && e.parameter.state){
+    const url = `${pkce_client_endpoint}?code=${encodeURIComponent(e.parameter.code)}&state=${encodeURIComponent(e.parameter.state)}`
+    let html = `<a href="${url}">Confirm Github Authorization</a>`
+    html = renderTemplate(html)
+    return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
+  }else{
+    let html = `Error`
+    html = renderTemplate(html)
+    return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
+  }
+}
+
+function doPost(e){
+
+  function check_pkce(verifier){
+      const cached = cache.get('code_challenge')
+      if (cached != null){
+          const sha256Hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, verifier)
+          const challenge = Utilities.base64Encode(sha256Hash)
+              .replace(/\+/g, '-')
+              .replace(/\//g, '_')
+              .replace(/=+$/, ''); 
+          if(cached == challenge){
+            return true
+          }else{
+            return false
+          }       
+      }else{
+        return false
+      }
+  }
+
+  if(e.parameter.grant_type == "authorization_code"
+      && e.parameter.client_id == github_client_id
+      && e.parameter.redirect_uri == pkce_client_endpoint
+      && check_pkce(e.parameter.code_verifier)
+  ){
+          const data = {
+            client_id: auth_config.client_id,
+            client_secret: auth_config.client_secret,
+            code:e.parameter.code,
+          };
+          const options = {
+            method: 'post',
+            contentType: 'application/json',
+            payload: JSON.stringify(data),
+            headers:{
+              accept: 'application/json'
+            }
+          };
+
+          const response = UrlFetchApp.fetch(auth_config.token_endpoint, options); 
+
+          var output = ContentService.createTextOutput()
+          output.setContent(response);
+          output.setMimeType(ContentService.MimeType.TEXT);
+          return output;                
+  }else{
+          let html = `Error`
+          html = renderTemplate(html)
+          return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME)   
+  }
+}
