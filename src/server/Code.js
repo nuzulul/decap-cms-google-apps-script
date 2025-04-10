@@ -1,4 +1,4 @@
-const jsonString = HtmlService.createHtmlOutputFromFile("config.html").getContent()
+const jsonString = HtmlService.createHtmlOutputFromFile('config.html').getContent()
 const jsonObject = JSON.parse(jsonString)
 if(jsonObject.github_client_id && jsonObject.github_client_secret){
     PropertiesService.getScriptProperties().setProperty('github_client_id', jsonObject.github_client_id)
@@ -59,14 +59,15 @@ function doGet(e) {
       return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
 
   }else if(e.parameter.code && e.parameter.state){
-    const url = `${pkce_client_endpoint}?code=${encodeURIComponent(e.parameter.code)}&state=${encodeURIComponent(e.parameter.state)}`
-    let html = `<a href="${url}">Confirm Github Authorization</a>`
-    html = renderTemplate(html)
-    return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
+      cache.put('code', e.parameter.code)
+      const url = `${pkce_client_endpoint}?code=${encodeURIComponent(e.parameter.code)}&state=${encodeURIComponent(e.parameter.state)}`
+      let html = `<a href="${url}">Confirm Github Authorization</a>`
+      html = renderTemplate(html)
+      return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
   }else{
-    let html = `Error`
-    html = renderTemplate(html)
-    return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
+      let html = `Error`
+      html = renderTemplate(html)
+      return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
   }
 }
 
@@ -79,7 +80,7 @@ function doPost(e){
           const challenge = Utilities.base64Encode(sha256Hash)
               .replace(/\+/g, '-')
               .replace(/\//g, '_')
-              .replace(/=+$/, ''); 
+              .replace(/=+$/, '') 
           if(cached == challenge){
             return true
           }else{
@@ -90,34 +91,51 @@ function doPost(e){
       }
   }
 
+  function check_code(code){
+      const cached = cache.get('code')
+      if (cached != null){
+        if(code == cached){
+          return true
+        }else{
+          return false
+        }
+      }else{
+        return false
+      }
+  }
+
   if(e.parameter.grant_type == "authorization_code"
       && e.parameter.client_id == github_client_id
       && e.parameter.redirect_uri == pkce_client_endpoint
       && check_pkce(e.parameter.code_verifier)
+      && check_code(e.parameter.code)
   ){
-          const data = {
-            client_id: auth_config.client_id,
-            client_secret: auth_config.client_secret,
-            code:e.parameter.code,
-          };
-          const options = {
-            method: 'post',
-            contentType: 'application/json',
-            payload: JSON.stringify(data),
-            headers:{
-              accept: 'application/json'
-            }
-          };
+      cache.removeAll(['code', 'code_challenge', 'state'])
+      
+      const data = {
+        client_id: auth_config.client_id,
+        client_secret: auth_config.client_secret,
+        code:e.parameter.code,
+      }
 
-          const response = UrlFetchApp.fetch(auth_config.token_endpoint, options); 
+      const options = {
+        method: 'post',
+        contentType: 'application/json',
+        payload: JSON.stringify(data),
+        headers:{
+          accept: 'application/json'
+        }
+      }
 
-          var output = ContentService.createTextOutput()
-          output.setContent(response);
-          output.setMimeType(ContentService.MimeType.TEXT);
-          return output;                
+      const response = UrlFetchApp.fetch(auth_config.token_endpoint, options) 
+
+      var output = ContentService.createTextOutput()
+      output.setContent(response)
+      output.setMimeType(ContentService.MimeType.TEXT)
+      return output                
   }else{
-          let html = `Error`
-          html = renderTemplate(html)
-          return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME)   
+      let html = `Error`
+      html = renderTemplate(html)
+      return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME)   
   }
 }

@@ -137,5 +137,8 @@ dist
 
 appsscript.json
 .clasp.json
-#src/config.html
-#demo/config.yml
+
+#--asume-unchanged--
+src/server/config.html
+demo/config.yml
+demo/client.html
