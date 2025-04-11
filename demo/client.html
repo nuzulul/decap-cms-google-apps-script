@@ -31,18 +31,7 @@
           
           const params = getParams(window.location.href) 
           
-          if(params.authorize){
-                
-                  const authorization = decodeURIComponent(params.authorize)
-                
-                  const receiveMessage = (message) => {
-                    window.opener.postMessage(authorization,"*");
-                    window.removeEventListener("message", receiveMessage, false);
-                  }
-                  window.addEventListener("message", receiveMessage, false);
-                  window.opener.postMessage("authorizing:github", "*");
-                  
-          }else if(params.code && params.state && params.state == localStorage.getItem("pkce_state")){    
+          if(params.code && params.state && params.state == localStorage.getItem("pkce_state")){    
           
                   const data = new URLSearchParams({
                       grant_type: "authorization_code",
@@ -88,7 +77,7 @@
                           console.warn('Something went wrong.', err);
                   });
           
-          } else {
+          } else if(params.provider == 'github'){
                     
             
                 function generateRandomString() {
@@ -126,7 +115,7 @@
                     var url = client_config.apps_script_url
                         + '?response_type=code'
                         + '&client_id='+encodeURIComponent(client_config.github_client_id)
-                        + '&scope='+encodeURIComponent('repo user')
+                        + '&scope='+encodeURIComponent('repo')
                         + '&redirect_uri='+encodeURIComponent(client_config.pkce_client_endpoint)  
                         + "&code_challenge="+encodeURIComponent(code_challenge)
                         + "&code_challenge_method=S256"                

@@ -2,7 +2,6 @@ backend:
   name: github
   repo: username/repo
   branch: main
-  site_domain: cms.netlify.com
   base_url: http://127.0.0.1:8080
   auth_endpoint: /client.html
 media_folder: static/upload

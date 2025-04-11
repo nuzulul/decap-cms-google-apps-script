@@ -62,7 +62,7 @@ backend:
 ### 5. Update Google Apps Script project configuration
 
 - Finally, update `config.html` in Google Apps Script project above
-```javascript
+```json
 {
   "github_client_id":"12345",
   "github_client_secret":"12345",
@@ -78,4 +78,4 @@ backend:
 
 ### 6. Publish
 
-Publish your Decap CMS and open it on your browser, you should see a Login with Github button
+Publish your Decap CMS and open it on your browser, now you should see a Login with Github button
