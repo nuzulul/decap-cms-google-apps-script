@@ -1,7 +1,7 @@
 # decap-cms-google-apps-script
 This is [Decap CMS](https://decapcms.org/) (formerly Netlify CMS) Github OAuth Client implementation in Google Apps Script via OAuth2 with PKCE (Proof Key for Code Exchange). This code acting as the OAuth client allowing Decap CMS without using Netlify's service. See other implementations in [External OAuth Clients](https://decapcms.org/docs/external-oauth-clients/).
 
-Unfortunately Google Apps Script uses double iframe for web type project which prevents us from using the built in Decap CMS Github Backend Authorization Code Flow. Decap CMS built in Github Backend also doesn't support Authorization Code Flow with PKCE so we will create custom OAuth2 PKCE client to make Github Backend works with Google Apps Script.
+Unfortunately Google Apps Script uses double iframes for web type projects which prevents us from using the built-in Decap CMS Github Backend Authorization Code Flow. While the built-in Decap CMS Github Backend doesn't support Authorization Code Flow with PKCE so we will create custom OAuth2 PKCE client to make Github Backend work with Google Apps Script project.
 
 ## Installation
 
@@ -12,8 +12,8 @@ Unfortunately Google Apps Script uses double iframe for web type project which p
 - Replace `Code.gs` content with [Code.js](https://github.com/nuzulul/decap-cms-google-apps-script/blob/main/src/server/Code.js)
 - Add a new HTML file with a name `config.html` and then replace the content with [config.html](https://github.com/nuzulul/decap-cms-google-apps-script/blob/main/src/server/config.html)
 - Click `Deploy` > `New deployment` > `Select type` > `Web app`
-- Change `Configuration` > `Web app` > `Execute as` to `Me`
-- Change `Configuration` > `Web app` > `Who has access` to `anyone`
+- Set `Configuration` > `Web app` > `Execute as` to `Me`
+- Set `Configuration` > `Web app` > `Who has access` to `anyone`
 - Click `Deploy`
 - Click `Authorize access`
 - Click your google account
@@ -34,7 +34,7 @@ Unfortunately Google Apps Script uses double iframe for web type project which p
 
 ### 3. Create OAuth2 with PKCE client
 
-- Copy [client.html](https://github.com/nuzulul/decap-cms-google-apps-script/blob/main/src/client/client.html) file to your Decap CMS directory or whereever you will publish it.
+- Copy [client.html](https://github.com/nuzulul/decap-cms-google-apps-script/blob/main/src/client/client.html) file to your Decap CMS directory or any directory you will publish it.
 - Update the configuration
 ```
 let client_config = {
