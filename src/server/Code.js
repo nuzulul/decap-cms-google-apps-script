@@ -26,7 +26,7 @@ function renderTemplate(content){
                         <base target="_top">
                       </head>
                       <body>
-                      <div>
+                      <div style="display: flex; align-content: center; justify-content: center; align-items: center; height: 100vh;">
                         ${content}
                       </div>
                     </body>
@@ -54,18 +54,18 @@ function doGet(e) {
           + "&scope="+encodeURIComponent(e.parameter.scope)
           + "&redirect_uri="+encodeURIComponent(auth_config.redirect_uri)
    
-      let html = `<a id="redirect" href="${url}">Open Github Authorization</a>`
+      let html = `<a style="text-decoration: none;padding: 2em 3em;background-color: rgb(49, 61, 62);color: rgb(255, 255, 255);border: 0px;border-radius: 5px;" href="${url}">Continue with Github</a>`
       html = renderTemplate(html)
       return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
 
   }else if(e.parameter.code && e.parameter.state){
       cache.put('code', e.parameter.code)
       const url = `${pkce_client_endpoint}?code=${encodeURIComponent(e.parameter.code)}&state=${encodeURIComponent(e.parameter.state)}`
-      let html = `<a href="${url}">Confirm Github Authorization</a>`
+      let html = `<a style="text-decoration: none;padding: 2em 3em;background-color: rgb(49, 61, 62);color: rgb(255, 255, 255);border: 0px;border-radius: 5px;" href="${url}">Confirm Github Authorization</a>`
       html = renderTemplate(html)
       return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
   }else{
-      let html = `Error`
+      let html = `<div>Error</div>`
       html = renderTemplate(html)
       return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
   }
@@ -134,7 +134,7 @@ function doPost(e){
       output.setMimeType(ContentService.MimeType.TEXT)
       return output                
   }else{
-      let html = `Error`
+      let html = `<div>Error</div>`
       html = renderTemplate(html)
       return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME)   
   }
