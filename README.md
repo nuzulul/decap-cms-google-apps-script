@@ -1,13 +1,13 @@
 # decap-cms-google-apps-script
-This is [Decap CMS](https://decapcms.org/) (formerly Netlify CMS) Github OAuth Client implementation in Google Apps Script via OAuth2 with PKCE (Proof Key for Code Exchange). This code acting as the OAuth client allowing Decap CMS without using Netlify's service. See other implementations in [External OAuth Clients](https://decapcms.org/docs/external-oauth-clients/).
+This is [Decap CMS](https://decapcms.org/) (formerly Netlify CMS) Github OAuth Client implementation in Google Apps Script acting as the External OAuth Client allowing Decap CMS without using Netlify's service.
 
-Unfortunately Google Apps Script uses double iframes for web type projects which prevents us from using the built-in Decap CMS Github Backend Authorization Code Flow. While the built-in Decap CMS Github Backend doesn't support Authorization Code Flow with PKCE so we will create custom OAuth2 PKCE client to make Github Backend work with Google Apps Script project.
+Unfortunately Google Apps Script uses double iframes for web type projects which breaks the built-in Decap CMS Github Backend Authorization Code Flow. While the built-in Decap CMS Github Backend doesn't support Authorization Code Flow with PKCE (Proof Key for Code Exchange) so we will create custom OAuth2 PKCE client as middleware to make Github Backend work with Google Apps Script project.
 
 ## Installation
 
 ### 1. Create Google Apps Script project
 
-- Go to https://script.google.com/ and then create `New Project`
+- Go to [https://script.google.com/](https://script.google.com/) and then create `New Project`
 - Click `Untitled project` then give your project a name `decap` or anything you like and click `Rename` 
 - Replace `Code.gs` content with [Code.js](https://github.com/nuzulul/decap-cms-google-apps-script/blob/main/src/server/Code.js)
 - Add a new HTML file with a name `config.html` and then replace the content with [config.html](https://github.com/nuzulul/decap-cms-google-apps-script/blob/main/src/server/config.html)
@@ -23,7 +23,7 @@ Unfortunately Google Apps Script uses double iframes for web type projects which
 
 ### 2. Create OAuth application at Github
 
-- Go to https://github.com/settings/developers
+- Go to [https://github.com/settings/developers](https://github.com/settings/developers)
 - Create `New OAuth app`
 - Set `Application name` to anything you like
 - Set `Homepage URL` to your site’s URL
@@ -36,7 +36,7 @@ Unfortunately Google Apps Script uses double iframes for web type projects which
 
 - Copy [client.html](https://github.com/nuzulul/decap-cms-google-apps-script/blob/main/src/client/client.html) file to your Decap CMS directory or any directory you will publish it.
 - Update the configuration
-```
+```javascript
 let client_config = {
     github_client_id : '12345',
     apps_script_url : 'https://script.google.com/macros/s/SCRIPTID/exec',
@@ -50,12 +50,11 @@ let client_config = {
 ### 4. Configure Decap CMS
 
 - Update your Decap CMS `config.yml`
-```
+```yaml
 backend:
   name: github # backend to use
   repo: username/repo # your username and repo
   branch: main # branch to use
-  site_domain: cms.netlify.com # location.hostname (or cms.netlify.com when on localhost)
   base_url: http://127.0.0.1:8080 # PKCE client.html hostname (just the base domain, no path)
   auth_endpoint: /client.html # PKCE client.html path
 ```
@@ -63,7 +62,7 @@ backend:
 ### 5. Update Google Apps Script project configuration
 
 - Finally, update `config.html` in Google Apps Script project above
-```
+```javascript
 {
   "github_client_id":"12345",
   "github_client_secret":"12345",

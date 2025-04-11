@@ -1,6 +1,6 @@
 const jsonString = HtmlService.createHtmlOutputFromFile('config.html').getContent()
 const jsonObject = JSON.parse(jsonString)
-if(jsonObject.github_client_id && jsonObject.github_client_secret){
+if(jsonObject.github_client_id && jsonObject.github_client_secret && jsonObject.pkce_client_endpoint){
     PropertiesService.getScriptProperties().setProperty('github_client_id', jsonObject.github_client_id)
     PropertiesService.getScriptProperties().setProperty('github_client_secret', jsonObject.github_client_secret)
     PropertiesService.getScriptProperties().setProperty('pkce_client_endpoint', jsonObject.pkce_client_endpoint)
@@ -73,7 +73,7 @@ function doGet(e) {
 
 function doPost(e){
 
-  function check_pkce(verifier){
+  function validate_pkce(verifier){
       const cached = cache.get('code_challenge')
       if (cached != null){
           const sha256Hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, verifier)
@@ -91,7 +91,7 @@ function doPost(e){
       }
   }
 
-  function check_code(code){
+  function validate_code(code){
       const cached = cache.get('code')
       if (cached != null){
         if(code == cached){
@@ -107,8 +107,8 @@ function doPost(e){
   if(e.parameter.grant_type == "authorization_code"
       && e.parameter.client_id == github_client_id
       && e.parameter.redirect_uri == pkce_client_endpoint
-      && check_pkce(e.parameter.code_verifier)
-      && check_code(e.parameter.code)
+      && validate_pkce(e.parameter.code_verifier)
+      && validate_code(e.parameter.code)
   ){
       cache.removeAll(['code', 'code_challenge', 'state'])
       
