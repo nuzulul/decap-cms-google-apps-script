@@ -66,6 +66,8 @@
                             console.log('authorization',authorization);
                         }else{
                             authorization = `authorization:github:error:${data}`
+                            console.log('authorization',authorization);
+                            alert(authorization)
                         }		
                         const receiveMessage = (message) => {
                           window.opener.postMessage(authorization,message.origin);

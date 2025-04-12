@@ -65,7 +65,15 @@ function doGet(e) {
       html = renderTemplate(html)
       return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
   }else{
-      let html = `<div>Error</div>`
+      let response = {
+        error: {
+          response_type: (e.parameter.response_type == "code"),
+          code_challenge_method: (e.parameter.code_challenge_method == "S256"),
+          client_id: (e.parameter.client_id == github_client_id),
+          redirect_uri: (e.parameter.redirect_uri == pkce_client_endpoint)
+        }
+      }
+      let html = `<div>Error :</br><pre>${JSON.stringify(response)}</pre></div>`
       html = renderTemplate(html)
       return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME) 
   }
@@ -134,8 +142,18 @@ function doPost(e){
       output.setMimeType(ContentService.MimeType.TEXT)
       return output                
   }else{
-      let html = `<div>Error</div>`
-      html = renderTemplate(html)
-      return HtmlService.createHtmlOutput(html).setSandboxMode(HtmlService.SandboxMode.IFRAME)   
+      var response = {
+          error: {
+            grant_type: (e.parameter.grant_type == "authorization_code"),
+            client_id: (e.parameter.client_id == github_client_id),
+            redirect_uri: (e.parameter.redirect_uri == pkce_client_endpoint),
+            validate_pkce: validate_pkce(e.parameter.code_verifier),
+            validate_code: validate_code(e.parameter.code)
+          }
+      }
+      var output = ContentService.createTextOutput()
+      output.setContent(JSON.stringify(response))
+      output.setMimeType(ContentService.MimeType.TEXT)
+      return output  
   }
 }
