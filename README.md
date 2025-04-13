@@ -1,7 +1,9 @@
 # decap-cms-google-apps-script
-This is [Decap CMS](https://decapcms.org/) (formerly Netlify CMS) Github OAuth Client implementation in Google Apps Script acting as the External OAuth Client allowing Decap CMS without using Netlify's service.
+A [Decap CMS](https://decapcms.org/) (formerly Netlify CMS) Github OAuth Client implementation in Google Apps Script acting as the External OAuth Client allowing Decap CMS without using Netlify's service.
 
-Unfortunately Google Apps Script uses double iframes for web type projects which breaks the built-in Decap CMS Github Backend Authorization Code Flow. While the built-in Decap CMS Github Backend doesn't support Authorization Code Flow with PKCE (Proof Key for Code Exchange) so we will create custom OAuth2 PKCE client as middleware to make Github Backend work with Google Apps Script project.
+Unfortunately Google Apps Script uses double iframes for web type projects which cause a problem with the built-in Github backend authorization code flow. 
+
+While the built-in Github backend doesn't support authorization code flow with PKCE (Proof Key for Code Exchange) so we will create custom OAuth2 PKCE client as middleware to make Github backend work with Google Apps Script project.
 
 ## Installation
 
