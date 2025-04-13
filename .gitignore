@@ -140,5 +140,3 @@ appsscript.json
 
 #--asume-unchanged--
 src/server/config.html
-demo/config.yml
-demo/client.html

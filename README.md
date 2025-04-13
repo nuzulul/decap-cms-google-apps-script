@@ -36,13 +36,13 @@ While the built-in Github backend doesn't support authorization code flow with P
 
 ### 3. Create OAuth2 with PKCE client
 
-- Copy [client.html](https://github.com/nuzulul/decap-cms-google-apps-script/blob/main/src/client/client.html) file to your Decap CMS directory or any directory you will publish it.
+- Copy [client.html](https://github.com/nuzulul/decap-cms-google-apps-script/blob/main/src/client/client.html) file to your Decap CMS `admin` directory or any directory you will publish it.
 - Update the configuration
 ```javascript
 let client_config = {
     github_client_id : '12345',
     apps_script_url : 'https://script.google.com/macros/s/SCRIPTID/exec',
-    pkce_client_endpoint : 'http://127.0.0.1:8080/client.html'
+    pkce_client_endpoint : 'https://example.com/admin/client.html'
 }  
 ```
 - Set `github_client_id` to `Client ID` above
@@ -57,8 +57,8 @@ backend:
   name: github # backend to use
   repo: username/repo # your username and repo
   branch: main # branch to use
-  base_url: http://127.0.0.1:8080 # PKCE client.html hostname (just the base domain, no path)
-  auth_endpoint: /client.html # PKCE client.html path
+  base_url: https://example.com # PKCE client.html hostname (just the base domain, no path)
+  auth_endpoint: /admin/client.html # PKCE client.html path
 ```
 
 ### 5. Update Google Apps Script project configuration
@@ -68,7 +68,7 @@ backend:
 {
   "github_client_id":"12345",
   "github_client_secret":"12345",
-  "pkce_client_endpoint":"http://127.0.0.1:8080/client.html"
+  "pkce_client_endpoint":"https://example.com/admin/client.html"
 }
 ```
 - Set `github_client_id` to `Client ID` above
