@@ -1,6 +1,6 @@
 {
   "name": "decap-cms-google-apps-script",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "decap cms oauth github client implementation in google apps script",
   "main": "index.js",
   "scripts": {
